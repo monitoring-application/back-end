@@ -7,7 +7,7 @@ import {
 export default class TypeOrmConfig {
   static getOrmConfig(config: ConfigService): TypeOrmModuleOptions {
     return {
-      type: 'mysql',
+      type: 'postgres',
       host: config.get('DB_HOST'),
       port: config.get('DB_PORT'),
       username: config.get('DB_USER'),
@@ -16,6 +16,9 @@ export default class TypeOrmConfig {
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
       autoLoadEntities: true,
+      ssl: process.env.NODE_ENV === 'production'
+     ? { rejectUnauthorized: false }
+     : false,
     };
   }
 }

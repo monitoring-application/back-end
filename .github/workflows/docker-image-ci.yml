@@ -31,16 +31,16 @@ jobs:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/roselin-contact-us-api:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/roselin-contact-us-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/roselin-contact-us-api:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/roselin-contact-signup-api:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/roselin-contact-signup-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/roselin-contact-signup-api:buildcache,mode=max
 
   deploy:
     needs: docker
     runs-on: ubuntu-latest
     steps:
       -
-        name: Deploy CONTACT-US
+        name: Deploy CONTACT-SIGNUP-API
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}

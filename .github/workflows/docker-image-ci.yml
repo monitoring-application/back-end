@@ -48,7 +48,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{secrets.SSH_KEY}}
           script: |
-            cd deployment-scripts/roselin-contact-us/ 
+            cd deployment-scripts/webapp/ 
             docker compose pull rose-contact-us-api
             docker compose up rose-contact-us-api -d
             docker compose logs --tail 100 rose-contact-us-api

@@ -16,9 +16,10 @@ export default class TypeOrmConfig {
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
       autoLoadEntities: true,
-      ssl: process.env.NODE_ENV === 'production'
-     ? { rejectUnauthorized: false }
-     : false,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
     };
   }
 }

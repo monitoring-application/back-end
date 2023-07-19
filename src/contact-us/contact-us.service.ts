@@ -11,34 +11,32 @@ export class ContactUsService {
   constructor(
     @InjectRepository(ContactUs) private repo: Repository<ContactUs>,
     private emailevent: EventEmitter2,
-    private forwardMail: MailService
-  ) {
-  }
+    private forwardMail: MailService,
+  ) {}
 
   async create(dto: CreateContactUsDto) {
-    const model = this.repo.create(dto)
-    await this.repo.save(model)
-    this.emailevent.emit('email.sent', model)
-    this.forwardMail.sendingEmail(dto)
+    const model = this.repo.create(dto);
+    await this.repo.save(model);
+    this.emailevent.emit('email.sent', model);
+    this.forwardMail.sendingEmail(dto);
     return {
-      message: 'Email Sent'
-    }
+      message: 'Email Sent',
+    };
   }
 
   findAll() {
-    return this.repo.find()
+    return this.repo.find();
   }
 
   findOne(id: number) {
-    return this.repo.findBy({ id })
+    return this.repo.findBy({ id });
   }
 
   async remove(id: number) {
-    const model = await this.findOne(id)
-    await this.repo.softRemove(model)
+    const model = await this.findOne(id);
+    await this.repo.softRemove(model);
     return {
-      message: 'Email Deleted'
-    }
+      message: 'Email Deleted',
+    };
   }
-
 }

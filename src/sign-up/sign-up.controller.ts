@@ -37,7 +37,7 @@ export class SignUpController {
   @UseGuards(ApiAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.signUpService.findOne(+id);
+    return this.signUpService.findOne(id);
   }
 
   @ApiSecurity('access-key')
@@ -49,8 +49,15 @@ export class SignUpController {
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
+  @Patch('approve/:id')
+  approve(@Param('id') id: string) {
+    return this.signUpService.approve(id);
+  }
+
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.signUpService.remove(+id);
+    return this.signUpService.remove(id);
   }
 }

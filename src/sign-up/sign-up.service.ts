@@ -15,25 +15,36 @@ export class SignUpService {
   create(createSignUpDto: CreateSignUpDto) {
     delete createSignUpDto.id;
     const model = this.signUpRepo.create(createSignUpDto);
+
     model.member_code = this.generateRandomValue();
+    model.full_name = `${createSignUpDto.first_name} ${createSignUpDto.last_name}`;
+
     const data = this.signUpRepo.save(model);
     return data;
   }
 
   findAll() {
-    return `This action returns all signUp`;
+    return this.signUpRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} signUp`;
+  findOne(id: string) {
+    return this.signUpRepo.findBy({ id });
   }
 
   update(id: number, updateSignUpDto: UpdateSignUpDto) {
     return `This action updates a #${id} signUp`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} signUp`;
+  approve(id: string) {
+    return id;
+  }
+
+  async remove(id: string) {
+    const model = await this.findOne(id);
+    await this.signUpRepo.softRemove(model);
+    return {
+      message: 'Email Deleted',
+    };
   }
 
   generateRandomValue() {

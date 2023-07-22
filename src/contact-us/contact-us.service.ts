@@ -16,6 +16,7 @@ export class ContactUsService {
 
   async create(dto: CreateContactUsDto) {
     const model = this.repo.create(dto);
+
     await this.repo.save(model);
     this.emailevent.emit('email.sent', model);
     this.forwardMail.sendingEmail(dto);

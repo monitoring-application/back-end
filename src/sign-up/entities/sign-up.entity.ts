@@ -14,6 +14,8 @@ export class SignUp {
   @Column({ nullable: true })
   member_code: string;
   @Column({ nullable: true })
+  full_name: string;
+  @Column({ nullable: true })
   first_name: string;
   @Column({ nullable: true })
   last_name: string;

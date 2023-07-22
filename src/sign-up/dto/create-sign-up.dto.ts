@@ -3,6 +3,7 @@ import { IsPhoneNumber } from 'class-validator';
 export class CreateSignUpDto {
   id?: string;
   member_code: string;
+  full_name?: string;
   first_name?: string;
   last_name?: string;
   email: string;

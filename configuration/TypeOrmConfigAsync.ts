@@ -7,7 +7,7 @@ import {
 export default class TypeOrmConfig {
   static getOrmConfig(config: ConfigService): TypeOrmModuleOptions {
     return {
-      type: 'postgres',
+      type: 'mysql',
       host: config.get('DB_HOST'),
       port: config.get('DB_PORT'),
       username: config.get('DB_USER'),

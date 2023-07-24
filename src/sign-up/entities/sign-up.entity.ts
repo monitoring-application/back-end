@@ -27,6 +27,8 @@ export class SignUp {
   mobile_number: string;
 
   @Column({ nullable: true })
+  downline: number;
+  @Column({ nullable: true })
   status: number;
 
   @CreateDateColumn({ select: false })

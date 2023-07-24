@@ -7,12 +7,14 @@ import { AdminUser } from './entities/user.entity';
 import { AdminToken } from './entities/personal_tokens';
 import { Apikey } from './entities/api-keys.entity';
 
-@Global()
+// @Global()
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminUser, AdminToken, Apikey]), AuthModule],
+    TypeOrmModule.forFeature([AdminUser, AdminToken, Apikey]),
+    AuthModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
-  exports: [UserService]
+  exports: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

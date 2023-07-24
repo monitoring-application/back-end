@@ -20,7 +20,6 @@ import { SignUpModule } from './sign-up/sign-up.module';
 @Global()
 @Module({
   imports: [
-    UserModule,
     AuthModule,
     ContactUsModule,
     SwaggerModule,
@@ -28,6 +27,7 @@ import { SignUpModule } from './sign-up/sign-up.module';
       isGlobal: true,
       envFilePath: ['.env'],
     }),
+    UserModule,
     TypeOrmModule.forRootAsync(TypeOrmConfigAsync),
     MailerModule.forRootAsync({
       imports: [ConfigModule], // import module if not enabled globally

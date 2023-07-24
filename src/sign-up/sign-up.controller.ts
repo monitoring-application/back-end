@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { SignUpService } from './sign-up.service';
 import { CreateSignUpDto } from './dto/create-sign-up.dto';
@@ -28,9 +29,16 @@ export class SignUpController {
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
-  @Get()
-  findAll() {
-    return this.signUpService.findAll();
+  @Get('pagination')
+  findAll(
+    @Query()
+    queries: {
+      search_value: string;
+      pageNumber: number;
+      pageSize: number;
+    },
+  ) {
+    return this.signUpService.findAll(queries);
   }
 
   @ApiSecurity('access-key')
@@ -42,6 +50,13 @@ export class SignUpController {
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
+  @Get('member/:memberCode')
+  findMember(@Param('memberCode') memberCode: string) {
+    return this.signUpService.findByMemberCode(memberCode);
+  }
+
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSignUpDto: UpdateSignUpDto) {
     return this.signUpService.update(+id, updateSignUpDto);
@@ -49,9 +64,9 @@ export class SignUpController {
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
-  @Patch('approve/:id')
-  approve(@Param('id') id: string) {
-    return this.signUpService.approve(id);
+  @Patch('approve/:id/:status')
+  approve(@Param('id') id: string, @Param('status') status: number) {
+    return this.signUpService.approve(id, status);
   }
 
   @ApiSecurity('access-key')

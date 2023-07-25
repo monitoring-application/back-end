@@ -14,12 +14,13 @@ import { CreateSignUpDto } from './dto/create-sign-up.dto';
 import { UpdateSignUpDto } from './dto/update-sign-up.dto';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ApiAuthGuard } from 'src/auth/guards/api-guard.guard';
+import { LoginAuthDto } from './dto/login.dto';
 
 @ApiTags('Sign Up')
 @Controller({ path: 'sign-up', version: '1' })
 export class SignUpController {
   constructor(private readonly signUpService: SignUpService) {}
-
+  //#region methods
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
   @Post()
@@ -74,5 +75,13 @@ export class SignUpController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.signUpService.remove(id);
+  }
+  //#endregion
+
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
+  @Post('login')
+  onLogin(@Body() dto: LoginAuthDto) {
+    return this.signUpService.login(dto);
   }
 }

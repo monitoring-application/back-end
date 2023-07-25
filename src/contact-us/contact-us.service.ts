@@ -9,7 +9,8 @@ import { ContactUs } from './entities/contact-us.entity';
 @Injectable()
 export class ContactUsService {
   constructor(
-    @InjectRepository(ContactUs) private repo: Repository<ContactUs>,
+    @InjectRepository(ContactUs)
+    private repo: Repository<ContactUs>,
     private emailevent: EventEmitter2,
     private forwardMail: MailService,
   ) {}

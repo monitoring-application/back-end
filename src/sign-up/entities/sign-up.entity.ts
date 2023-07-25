@@ -1,3 +1,4 @@
+import { IsNotEmpty } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -16,18 +17,15 @@ export class SignUp {
   @Column({ nullable: true })
   full_name: string;
   @Column({ nullable: true })
-  first_name: string;
-  @Column({ nullable: true })
-  last_name: string;
-  @Column({ nullable: true })
   email: string;
   @Column({ nullable: true })
-  referal_code: string;
+  password: string;
   @Column({ nullable: true })
   mobile_number: string;
-
   @Column({ nullable: true })
-  downline: number;
+  upline: string;
+  @Column({ nullable: true })
+  ttlDownline: number;
   @Column({ nullable: true })
   status: number;
 

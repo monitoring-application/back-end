@@ -1,28 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSignUpDto } from './dto/create-sign-up.dto';
 import { UpdateSignUpDto } from './dto/update-sign-up.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConnectionNotFoundError, IsNull, Like, Repository } from 'typeorm';
+import { Like, PrimaryGeneratedColumn, Repository } from 'typeorm';
 import { SignUp } from './entities/sign-up.entity';
-import { compareSync } from 'bcrypt';
-import { promises } from 'dns';
-import { Sign } from 'crypto';
+import * as bcrypt from 'bcryptjs';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class SignUpService {
   constructor(
     @InjectRepository(SignUp)
     private signUpRepo: Repository<SignUp>,
+    private emailevent: EventEmitter2,
+    private mailService: MailService,
   ) {}
 
-  create(createSignUpDto: CreateSignUpDto) {
-    delete createSignUpDto.id;
-    const model = this.signUpRepo.create(createSignUpDto);
+  async create(dto: CreateSignUpDto) {
+    delete dto.id;
+    var code = this.generateRandomValue();
 
-    model.member_code = this.generateRandomValue();
-    model.full_name = `${createSignUpDto.first_name} ${createSignUpDto.last_name}`;
+    const model = this.signUpRepo.create(dto);
+    model.member_code = code;
+    model.password = await this.hashData(code);
 
     const data = this.signUpRepo.save(model);
+
+    this.emailevent.emit('email.sent', model);
+    this.mailService.signUpEmail(await data);
+
     return data;
   }
 
@@ -60,8 +67,17 @@ export class SignUpService {
     return this.signUpRepo.findBy({ id });
   }
 
-  findByMemberCode(memberCode: string) {
-    return this.signUpRepo.findBy({ member_code: memberCode });
+  async findByMemberCode(memberCode: string) {
+    const code = await this.signUpRepo.findOne({
+      where: {
+        member_code: memberCode,
+        status: 1,
+      },
+    });
+    console.log(code);
+    if (!code) return new BadRequestException('Code not found or inactive');
+
+    return code;
   }
 
   update(id: number, updateSignUpDto: UpdateSignUpDto) {
@@ -73,10 +89,10 @@ export class SignUpService {
     model.status = status;
 
     var retVal = this.signUpRepo.update(model.id, model);
-    if (model.referal_code == null || model.referal_code == '') {
+    if (model.id == null || model.id == '') {
     } else {
       const updateMain = await this.signUpRepo.findOneBy({
-        member_code: model.referal_code,
+        member_code: model.id,
       });
 
       this.updateCountDownline(updateMain);
@@ -95,10 +111,10 @@ export class SignUpService {
 
   async updateCountDownline(item: SignUp) {
     const count = await this.signUpRepo.countBy({
-      referal_code: item.member_code,
+      upline: item.id,
       status: 1,
     });
-    item.downline = count;
+    item.ttlDownline = count;
 
     await this.signUpRepo.update(item.id, item);
   }
@@ -112,5 +128,62 @@ export class SignUpService {
     }
 
     return randomValue;
+  }
+  async hashData(data: string) {
+    const saltOrRounds = 10;
+    const hash = await bcrypt.hash(data, saltOrRounds);
+    return hash;
+  }
+
+  async login(loginCreds: any) {
+    const { username, password } = loginCreds;
+    let userStats = 0;
+
+    let retVal = {
+      id: '',
+      member_code: '',
+      full_name: '',
+      email: '',
+      // password: '',
+      mobile_number: '',
+      upline: '',
+      ttlDownline: 0,
+      status: 0,
+      userStats: 0,
+    };
+
+    const user = await this.findByEmail(username);
+
+    if (!user) return (userStats = 0);
+    if (user.status != 1) return (userStats = 1);
+
+    const matched = await bcrypt
+      .compare(password, user.password)
+      .then(function (result: any) {
+        return result;
+      });
+    if (!matched) return (userStats = 2);
+
+    retVal = {
+      id: user.id,
+      member_code: user.member_code,
+      full_name: user.full_name,
+      email: user.email,
+      mobile_number: user.mobile_number,
+      upline: user.upline,
+      ttlDownline: user.ttlDownline,
+      status: user.status,
+      userStats: userStats,
+    };
+
+    return retVal;
+  }
+
+  findByEmail(username: string) {
+    return this.signUpRepo.findOne({
+      where: {
+        email: username,
+      },
+    });
   }
 }

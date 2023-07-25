@@ -32,7 +32,7 @@ export class MailService {
 
   async signUpEmail(data: SignUp) {
     // var url = 'http://localhost:4200/';
-    var url = 'https://api.friendsofroselin.com/';
+    var url = 'https://signup.friendsofroselin.com/';
     const config = new ConfigService();
     var contents = `<div
                       style="

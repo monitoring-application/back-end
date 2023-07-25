@@ -27,7 +27,7 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('User')
-// @ApiExcludeController(true)
+@ApiExcludeController(true)
 @Controller({ path: 'user', version: '1' })
 export class UserController {
   constructor(

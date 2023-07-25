@@ -32,7 +32,8 @@ export class MailService {
 
   async signUpEmail(data: SignUp) {
     // var url = 'http://localhost:4200/';
-    var url = 'https://signup.friendsofroselin.com/';
+    var signUpUrl = 'https://signup.friendsofroselin.com/';
+    var memberUrl = 'https://member.friendsofroselin.com/';
     const config = new ConfigService();
     var contents = `<div
                       style="
@@ -50,11 +51,11 @@ export class MailService {
       `<div>
         <p style="font-size: 16px"><b>Hi, ${data.full_name}</b></p>
         <div style="padding-left: 20px;">
-          <p>You can refer now a friend with this link: ${url}signup/${data.member_code}</p>
+          <p>You can refer now a friend with this link: ${signUpUrl}signup/${data.member_code}</p>
           <p>Username:${data.email}</p>
           <p>Password:${data.member_code}</p>
           <div style="padding-top: 16px">
-            <a href="${url}member-login/"
+            <a href="${memberUrl}member-login/"
               style="
                 background-color: #199319;
                 color: white;

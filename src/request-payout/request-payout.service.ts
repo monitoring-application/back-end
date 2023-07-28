@@ -21,12 +21,15 @@ export class RequestPayoutService {
   }
 
   findAll() {
-    return `This action returns all requestPayout`;
+    return this.repo.find();
   }
 
-  async findAllById(id: string) {
-    const result = await this.repo.findBy({
-      member_id: id == '' ? Like(`%${id}%`) : id,
+  async findAllById(data: { id: string }) {
+    const result = await this.repo.find({
+      where: {
+        member_id: data.id,
+      },
+      order: { created_at: 'ASC' },
     });
     return result;
   }

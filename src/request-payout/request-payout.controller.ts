@@ -37,8 +37,8 @@ export class RequestPayoutController {
   @UseGuards(ApiAuthGuard)
   @ApiParam({ name: 'id', type: String, required: true })
   @Get(':id')
-  async findAllById(@Param() id: string) {
-    return this.requestPayoutService.findAllById(id);
+  async findAllById(@Param() data: { id: string }) {
+    return this.requestPayoutService.findAllById(data);
   }
 
   @ApiSecurity('access-key')

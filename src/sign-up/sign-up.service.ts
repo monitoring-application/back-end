@@ -7,6 +7,7 @@ import { SignUp } from './entities/sign-up.entity';
 import * as bcrypt from 'bcryptjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MailService } from 'src/mail/mail.service';
+import { match } from 'assert';
 
 @Injectable()
 export class SignUpService {
@@ -116,6 +117,7 @@ export class SignUpService {
   async hashData(data: string) {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(data, saltOrRounds);
+    console.log(hash);
     return hash;
   }
 
@@ -145,7 +147,7 @@ export class SignUpService {
       .then(function (result: any) {
         return result;
       });
-    if (matched) userStats = 3;
+    if (!matched) userStats = 3;
 
     retVal = {
       id: user.id,

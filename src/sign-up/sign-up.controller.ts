@@ -34,6 +34,7 @@ export class SignUpController {
   findAll(
     @Query()
     queries: {
+      id: string;
       search_value: string;
       pageNumber: number;
       pageSize: number;
@@ -47,13 +48,6 @@ export class SignUpController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.signUpService.findOne(id);
-  }
-
-  @ApiSecurity('access-key')
-  @UseGuards(ApiAuthGuard)
-  @Get('member/:memberCode')
-  findMember(@Param('memberCode') memberCode: string) {
-    return this.signUpService.findByMemberCode(memberCode);
   }
 
   @ApiSecurity('access-key')
@@ -76,7 +70,6 @@ export class SignUpController {
   remove(@Param('id') id: string) {
     return this.signUpService.remove(id);
   }
-  //#endregion
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
@@ -84,4 +77,5 @@ export class SignUpController {
   onLogin(@Body() dto: LoginAuthDto) {
     return this.signUpService.login(dto);
   }
+  //#endregion
 }

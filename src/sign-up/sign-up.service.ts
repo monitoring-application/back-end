@@ -34,6 +34,7 @@ export class SignUpService {
   }
 
   async findAll(filter: {
+    id: string;
     search_value: string;
     pageNumber: number;
     pageSize: number;
@@ -42,14 +43,10 @@ export class SignUpService {
     const pageSize = filter.pageSize;
 
     const [result, count] = await this.signUpRepo.findAndCount({
-      where: [
-        {
-          full_name: Like(`%${filter.search_value}%`),
-        },
-        {
-          member_code: Like(`%${filter.search_value}%`),
-        },
-      ],
+      where: {
+        upline: filter.id == '' ? Like(`%${filter.id}%`) : filter.id,
+        full_name: Like(`%${filter.search_value}%`),
+      },
 
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
@@ -67,19 +64,6 @@ export class SignUpService {
     return this.signUpRepo.findBy({ id });
   }
 
-  async findByMemberCode(memberCode: string) {
-    const code = await this.signUpRepo.findOne({
-      where: {
-        member_code: memberCode,
-        status: 1,
-      },
-    });
-    console.log(code);
-    if (!code) return new BadRequestException('Code not found or inactive');
-
-    return code;
-  }
-
   update(id: number, updateSignUpDto: UpdateSignUpDto) {
     return `This action updates a #${id} signUp`;
   }
@@ -89,10 +73,10 @@ export class SignUpService {
     model.status = status;
 
     var retVal = this.signUpRepo.update(model.id, model);
-    if (model.id == null || model.id == '') {
+    if (model.upline == null || model.upline == '') {
     } else {
       const updateMain = await this.signUpRepo.findOneBy({
-        member_code: model.id,
+        member_code: model.upline,
       });
 
       this.updateCountDownline(updateMain);
@@ -138,7 +122,6 @@ export class SignUpService {
   async login(loginCreds: any) {
     const { username, password } = loginCreds;
     let userStats = 0;
-
     let retVal = {
       id: '',
       member_code: '',
@@ -154,15 +137,15 @@ export class SignUpService {
 
     const user = await this.findByEmail(username);
 
-    if (!user) return (userStats = 0);
-    if (user.status != 1) return (userStats = 1);
+    if (!user) userStats = 1;
+    if (user.status != 1) userStats = 2;
 
     const matched = await bcrypt
       .compare(password, user.password)
       .then(function (result: any) {
         return result;
       });
-    if (!matched) return (userStats = 2);
+    if (matched) userStats = 3;
 
     retVal = {
       id: user.id,

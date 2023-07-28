@@ -17,6 +17,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { SignUpModule } from './sign-up/sign-up.module';
+import { RequestPayoutModule } from './request-payout/request-payout.module';
 @Global()
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { SignUpModule } from './sign-up/sign-up.module';
     EventEmitterModule.forRoot(),
     MailModule,
     SignUpModule,
+    RequestPayoutModule,
   ],
   controllers: [],
   providers: [

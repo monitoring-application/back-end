@@ -22,6 +22,9 @@ export class RequestPayout {
   @Column({ nullable: true })
   status: number;
 
+  @Column({ nullable: true })
+  paid_at: Date;
+
   @CreateDateColumn()
   created_at: Date;
   @UpdateDateColumn({ select: false })

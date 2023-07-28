@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { RequestPayoutService } from './request-payout.service';
 import { CreateRequestPayoutDto } from './dto/create-request-payout.dto';
@@ -28,9 +29,16 @@ export class RequestPayoutController {
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
-  @Get()
-  findAll() {
-    return this.requestPayoutService.findAll();
+  @Get('pagination')
+  findAll(
+    @Query()
+    queries: {
+      search_value: string;
+      pageNumber: number;
+      pageSize: number;
+    },
+  ) {
+    return this.requestPayoutService.findAll(queries);
   }
 
   @ApiSecurity('access-key')
@@ -47,6 +55,13 @@ export class RequestPayoutController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.requestPayoutService.findOne(id);
+  }
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
+  @ApiParam({ name: 'id', type: String, required: true })
+  @Patch('paid/:id')
+  paid(@Param('id') data: { id: string }) {
+    return this.requestPayoutService.paid(data);
   }
 
   @ApiSecurity('access-key')

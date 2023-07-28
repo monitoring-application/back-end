@@ -20,8 +20,29 @@ export class RequestPayoutService {
     return data;
   }
 
-  findAll() {
-    return this.repo.find();
+  async findAll(filter: {
+    search_value: string;
+    pageNumber: number;
+    pageSize: number;
+  }) {
+    const pageNumber = filter.pageNumber;
+    const pageSize = filter.pageSize;
+
+    const [result, count] = await this.repo.findAndCount({
+      where: { member_name: Like(`%${filter.search_value}%`) },
+      order: { status: 'ASC', created_at: 'ASC' },
+
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
+    });
+
+    this.repo.findAndCount();
+    return {
+      result,
+      count,
+      pageNumber,
+      pageSize,
+    };
   }
 
   async findAllById(data: { id: string }) {
@@ -29,13 +50,26 @@ export class RequestPayoutService {
       where: {
         member_id: data.id,
       },
-      order: { created_at: 'ASC' },
+      order: { status: 'ASC', created_at: 'ASC' },
     });
     return result;
   }
 
   findOne(id: string) {
     return this.repo.findBy({ id });
+  }
+
+  async paid(data: { id: string }) {
+    const model = await this.repo.findOneBy({
+      id: data.id,
+    });
+
+    model.status = 1;
+    model.paid_at = new Date();
+
+    var retVal = this.repo.update(model.id, model);
+
+    return retVal;
   }
 
   update(id: number, updateRequestPayoutDto: UpdateRequestPayoutDto) {

@@ -5,4 +5,5 @@ export class CreateRequestPayoutDto {
   gcash_number: string;
   amount: number;
   status: number;
+  paid_at: Date;
 }

@@ -59,7 +59,6 @@ export class UserService {
     const hash = await this.hashData(user.password);
     model.password = hash;
     var data = await this.userRepo.save(model);
-    // const { password, ...response } = data
     return this.findOneModel(data.id);
   }
 
@@ -67,23 +66,6 @@ export class UserService {
     const model = this.userRepo.create(user);
     return this.userRepo.save(model);
   }
-
-  // async saveRefreshToken(id: string, rt: string) {
-  //   var model = new PersonalToken()
-  //   model.userId = id
-  //   model.refresh_token = await this.hashData(rt)
-  //   this.rtRepo.save(model)
-  // }
-
-  // async ChangePassword(id: number, newPassword: string) {
-  //   const password = newPassword;
-  //   // const hash = await this.hashData(password)// await bcrypt.hash(password, saltOrRounds);
-  //   var user = await this.userRepo.findOneBy({ id })
-  //   await this.userRepo.update(id, user);
-  //   return {
-  //     message: 'success'
-  //   };
-  // }
 
   async findByEmail(email: string) {
     var data = await this.userRepo.findOne({
@@ -107,11 +89,6 @@ export class UserService {
     });
     return data;
   }
-
-  // async findOne(id: number) {
-  //   var data = await this.userRepo.findOne({ where: { email }, select: ['id', 'password', 'email', 'verified', 'role'] });
-  //   return data;
-  // }
 
   async findAll() {
     var model = await this.userRepo.find({

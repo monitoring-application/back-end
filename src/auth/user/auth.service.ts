@@ -19,42 +19,12 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    @InjectRepository(AdminUser)
+    private readonly userRepo: Repository<AdminUser>,
     @InjectRepository(Apikey) private readonly apiRepo: Repository<Apikey>,
     // private roleService: RoleService,
     private config: ConfigService,
   ) {}
-
-  async getToken(id: number, email: string) {
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(
-        {
-          sub: id,
-          id,
-          email: email,
-        },
-        {
-          expiresIn: '7d',
-          secret: this.config.get('JWT_SECRET'),
-        },
-      ),
-      this.jwtService.signAsync(
-        {
-          sub: id,
-          id,
-          email: email,
-        },
-        {
-          expiresIn: '7d',
-          secret: this.config.get('JWT_REFRESH_SECRET'),
-        },
-      ),
-    ]);
-
-    return {
-      access_token: at,
-      refresh_token: rt,
-    };
-  }
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
@@ -84,27 +54,50 @@ export class AuthService {
     return this.userService.Verify(data.id);
   }
 
-  async login(user: AdminUser): Promise<any> {
-    // const payload = { email: user.email, sub: user.id };
-    const tokens = await this.getToken(user.id, user.email);
-    // await this.userService.saveRefreshToken(user.id, tokens.refresh_token)
-    // token.this.jwtService.sign(payload)
-    // const role = await this.roleService.findOne(user.role_id)
-    await this.userService.updateUserLogin(user.id, true);
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      middle_name: user.middle_name,
-      name_ext: user.name_ext,
-      contact: user.contact,
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
+  async login(loginCreds: any): Promise<any> {
+    const { username, password } = loginCreds;
+    let userStats = 0;
+    let retVal = {
+      id: 0,
+      first_name: '',
+      middle_name: '',
+      last_name: '',
+      email: '',
+      active: true,
+      userStats: 0,
     };
-  }
 
+    const user = await this.findByEmail(username);
+
+    if (!user) userStats = 1;
+    if (user.active == false) userStats = 2;
+
+    const matched = await bcrypt
+      .compare(password, user.password)
+      .then(function (result: any) {
+        return result;
+      });
+    if (!matched) userStats = 3;
+
+    retVal = {
+      id: user.id,
+      first_name: user.first_name,
+      middle_name: user.middle_name,
+      last_name: user.last_name,
+      email: user.email,
+      active: user.active,
+      userStats: userStats,
+    };
+
+    return retVal;
+  }
+  findByEmail(username: string) {
+    return this.userRepo.findOne({
+      where: {
+        email: username,
+      },
+    });
+  }
   private apiKeys: string[] = ['6885ab74-d692-4ad2-a6dc-8690ff3e7a24'];
 
   async validateApiKey(apiKey: string) {

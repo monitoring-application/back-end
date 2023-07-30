@@ -4,6 +4,7 @@ import {
   ApiExcludeController,
   ApiParam,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -13,18 +14,13 @@ import {
   Param,
   Patch,
   Post,
-  Query,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from '../guards/local.auth.guard';
 import { createUserDto } from './dto/create-user.dto';
-import {
-  UpdateRoleDto,
-  updateUserStatusDto,
-} from './dto/update-user-status.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiAuthGuard } from '../guards/api-guard.guard';
+import { LoginAuthDto } from 'src/sign-up/dto/login.dto';
 
 @ApiTags('User')
 @ApiExcludeController(true)
@@ -43,55 +39,56 @@ export class UserController {
     return this.userService.signup(user);
   }
 
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    required: true,
-  })
-  @Post('verify-user/:id')
-  async VerifyUser(@Param() data: { id: number }) {
-    return this.authService.verify(data);
-  }
+  // @ApiParam({
+  //   name: 'id',
+  //   type: Number,
+  //   required: true,
+  // })
+  // @Post('verify-user/:id')
+  // async VerifyUser(@Param() data: { id: number }) {
+  //   return this.authService.verify(data);
+  // }
 
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
   @Post('login')
-  @UseGuards(LocalAuthGuard)
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Body() dto: LoginAuthDto) {
+    return this.authService.login(dto);
   }
 
-  @Post('logout/:id')
-  async Logout(@Param('id') userId: number) {
-    console.log(userId + '');
-    return this.userService.logout(userId);
-  }
+  // @Post('logout/:id')
+  // async Logout(@Param('id') userId: number) {
+  //   console.log(userId + '');
+  //   return this.userService.logout(userId);
+  // }
 
-  @ApiParam({ name: 'role_id', type: Number, required: true })
-  @ApiParam({ name: 'id', type: Number, required: true })
-  @Patch('update/user/role/:id/:role_id')
-  UpdateRole(@Param() data: UpdateRoleDto) {
-    return this.userService.UpdateRole(+data.id, +data.role_id);
-  }
+  // @ApiParam({ name: 'role_id', type: Number, required: true })
+  // @ApiParam({ name: 'id', type: Number, required: true })
+  // @Patch('update/user/role/:id/:role_id')
+  // UpdateRole(@Param() data: UpdateRoleDto) {
+  //   return this.userService.UpdateRole(+data.id, +data.role_id);
+  // }
 
-  @ApiParam({
-    name: 'default',
-    type: Boolean,
-    required: true,
-    example: 'false',
-  })
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    required: true,
-  })
-  @Patch('update/user/default/:id/:default')
-  UpdateUserDefault(@Param() data: { id: number; default: boolean }) {
-    return this.userService.UpdateUserDefault(data);
-  }
+  // @ApiParam({
+  //   name: 'default',
+  //   type: Boolean,
+  //   required: true,
+  //   example: 'false',
+  // })
+  // @ApiParam({
+  //   name: 'id',
+  //   type: Number,
+  //   required: true,
+  // })
+  // @Patch('update/user/default/:id/:default')
+  // UpdateUserDefault(@Param() data: { id: number; default: boolean }) {
+  //   return this.userService.UpdateUserDefault(data);
+  // }
 
-  @Patch('user-status')
-  UpdateStatus(@Body() data: updateUserStatusDto) {
-    return this.userService.UpdateStatus(data);
-  }
+  // @Patch('user-status')
+  // UpdateStatus(@Body() data: updateUserStatusDto) {
+  //   return this.userService.UpdateStatus(data);
+  // }
 
   @Patch(':id')
   Update(@Body() data: UpdateUserDto, @Param('id') id: number) {

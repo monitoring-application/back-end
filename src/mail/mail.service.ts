@@ -51,7 +51,7 @@ export class MailService {
       `<div>
         <p style="font-size: 16px"><b>Hi, ${data.full_name}</b></p>
         <div style="padding-left: 20px;">
-          <p>You can refer now a friend with this link: ${signUpUrl}signup/${data.member_code}</p>
+          <p>You can refer now a friend with this link: ${signUpUrl}signup?id=${data.id}</p>
           <p>Username:${data.email}</p>
           <p>Password:${data.member_code}</p>
           <div style="padding-top: 16px">

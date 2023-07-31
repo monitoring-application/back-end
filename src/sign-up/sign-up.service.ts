@@ -19,19 +19,20 @@ export class SignUpService {
   ) {}
 
   async create(dto: CreateSignUpDto) {
-    delete dto.id;
-    var code = this.generateRandomValue();
+    const isExist = await this.findByEmail(dto.email);
+    if (isExist) return true;
 
+    delete dto.id;
     const model = this.signUpRepo.create(dto);
-    model.member_code = code;
-    model.password = await this.hashData(code);
+    model.member_code = this.generateRandomValue();
+    model.password = await this.hashData(this.generateRandomValue());
 
     const data = this.signUpRepo.save(model);
 
     this.emailevent.emit('email.sent', model);
     this.mailService.signUpEmail(await data);
 
-    return data;
+    return false;
   }
 
   async findAll(filter: {
@@ -117,7 +118,6 @@ export class SignUpService {
   async hashData(data: string) {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(data, saltOrRounds);
-    console.log(hash);
     return hash;
   }
 
@@ -164,11 +164,7 @@ export class SignUpService {
     return retVal;
   }
 
-  findByEmail(username: string) {
-    return this.signUpRepo.findOne({
-      where: {
-        email: username,
-      },
-    });
+  async findByEmail(username: string) {
+    return await this.signUpRepo.findOneBy({ email: username });
   }
 }

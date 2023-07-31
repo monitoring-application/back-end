@@ -18,6 +18,7 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { SignUpModule } from './sign-up/sign-up.module';
 import { RequestPayoutModule } from './request-payout/request-payout.module';
+import { FileManagerModule } from './file-manager/file-manager.module';
 @Global()
 @Module({
   imports: [
@@ -56,10 +57,18 @@ import { RequestPayoutModule } from './request-payout/request-payout.module';
       }),
       inject: [ConfigService],
     }),
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        dest: './upload', // configService.get<string>('MULTER_DEST'),
+      }),
+      inject: [ConfigService],
+    }),
     EventEmitterModule.forRoot(),
     MailModule,
     SignUpModule,
     RequestPayoutModule,
+    FileManagerModule,
   ],
   controllers: [],
   providers: [

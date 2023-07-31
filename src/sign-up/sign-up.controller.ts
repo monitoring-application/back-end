@@ -66,6 +66,17 @@ export class SignUpController {
 
   @ApiSecurity('access-key')
   @UseGuards(ApiAuthGuard)
+  @Get('findByEmail/:email')
+  findByEmail(@Param('email') email: string) {
+    const isExist = this.signUpService.findByEmail(email);
+
+    if (!isExist) return false;
+
+    return true;
+  }
+
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.signUpService.remove(id);

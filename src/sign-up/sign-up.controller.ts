@@ -12,7 +12,7 @@ import {
 import { SignUpService } from './sign-up.service';
 import { CreateSignUpDto } from './dto/create-sign-up.dto';
 import { UpdateSignUpDto } from './dto/update-sign-up.dto';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ApiAuthGuard } from 'src/auth/guards/api-guard.guard';
 import { LoginAuthDto } from './dto/login.dto';
 
@@ -62,6 +62,14 @@ export class SignUpController {
   @Patch('approve/:id/:status')
   approve(@Param('id') id: string, @Param('status') status: number) {
     return this.signUpService.approve(id, status);
+  }
+
+  @ApiSecurity('access-key')
+  @UseGuards(ApiAuthGuard)
+  @ApiParam({ name: 'id', type: String, required: true })
+  @Get('count/:id')
+  count(@Param('id') id: string) {
+    return this.signUpService.countDownline(id);
   }
 
   @ApiSecurity('access-key')

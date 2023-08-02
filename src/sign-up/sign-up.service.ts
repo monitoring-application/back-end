@@ -23,14 +23,18 @@ export class SignUpService {
     if (isExist) return true;
 
     delete dto.id;
+    const pass = this.generateRandomValue();
     const model = this.signUpRepo.create(dto);
     model.member_code = this.generateRandomValue();
-    model.password = await this.hashData(this.generateRandomValue());
+    model.password = pass;
+    model.passwordHash = await this.hashData(pass);
 
     const data = this.signUpRepo.save(model);
 
     this.emailevent.emit('email.sent', model);
     this.mailService.signUpEmail(await data);
+
+    this.updateUpline(dto.upline);
 
     return false;
   }
@@ -143,7 +147,7 @@ export class SignUpService {
     if (user.status != 1) userStats = 2;
 
     const matched = await bcrypt
-      .compare(password, user.password)
+      .compare(password, user.passwordHash)
       .then(function (result: any) {
         return result;
       });
@@ -160,11 +164,30 @@ export class SignUpService {
       status: user.status,
       userStats: userStats,
     };
-
     return retVal;
   }
 
   async findByEmail(username: string) {
     return await this.signUpRepo.findOneBy({ email: username });
+  }
+
+  async updateUpline(id: string) {
+    const upline = await this.signUpRepo.findOneBy({ id: id });
+
+    if (!upline) return;
+
+    upline.ttlDownline = await this.countDownline(id);
+
+    this.signUpRepo.update(upline.id, upline);
+  }
+
+  async countDownline(id: string) {
+    if (id.trim().length === 0) return 0;
+
+    return await this.signUpRepo.count({
+      where: {
+        upline: id,
+      },
+    });
   }
 }

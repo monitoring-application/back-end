@@ -21,10 +21,12 @@ export class SignUp {
   @Column({ nullable: true })
   password: string;
   @Column({ nullable: true })
+  passwordHash: string;
+  @Column({ nullable: true })
   mobile_number: string;
   @Column({ nullable: true })
   upline: string;
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   ttlDownline: number;
   @Column({ nullable: true })
   status: number;

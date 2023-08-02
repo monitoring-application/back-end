@@ -7,6 +7,7 @@ export class CreateSignUpDto {
   mobile_number: string;
   email: string;
   password: string;
+  passwordHash: string;
   upline: string;
   ttlDownline: number;
   status: number;

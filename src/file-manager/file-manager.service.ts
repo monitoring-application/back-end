@@ -1,16 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFileManagerDto } from './dto/create-file-manager.dto';
 import { UpdateFileManagerDto } from './dto/update-file-manager.dto';
+import { FileManager } from './entities/file-manager.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 // import toStream = require('buffer-to-stream');
 
 @Injectable()
 export class FileManagerService {
-  create(createFileManagerDto: CreateFileManagerDto) {
-    return 'This action adds a new fileManager';
+  constructor(
+    @InjectRepository(FileManager) private repo: Repository<FileManager>,
+  ) {}
+  async create(createFileManagerDto: CreateFileManagerDto) {
+    const data = this.repo.create(createFileManagerDto);
+    return await this.repo.save(data);
   }
 
-  findAll() {
-    return `This action returns all fileManager`;
+  findAll(id: string) {
+    return this.repo.find({
+      where: {
+        member_id: id,
+      },
+    });
   }
 
   findOne(id: number) {
@@ -21,7 +32,8 @@ export class FileManagerService {
     return `This action updates a #${id} fileManager`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} fileManager`;
+  async remove(id: number) {
+    const removeResponse = await this.repo.softDelete(id);
+    return removeResponse;
   }
 }

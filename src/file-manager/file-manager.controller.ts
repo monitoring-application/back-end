@@ -83,12 +83,9 @@ export class FileManagerController {
     return this.fileManagerService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateFileManagerDto: UpdateFileManagerDto,
-  ) {
-    return this.fileManagerService.update(+id, updateFileManagerDto);
+  @Patch('approve/:id/:status')
+  update(@Param('id') id: number, @Param('status') status: number) {
+    return this.fileManagerService.update(id, status);
   }
 
   @Delete(':id')

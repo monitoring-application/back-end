@@ -144,7 +144,7 @@ export class SignUpService {
     const user = await this.findByEmail(username);
 
     if (!user) userStats = 1;
-    if (user.status != 1) userStats = 2;
+    if (user.status != 1 && user.status != 4) userStats = 2;
 
     const matched = await bcrypt
       .compare(password, user.passwordHash)

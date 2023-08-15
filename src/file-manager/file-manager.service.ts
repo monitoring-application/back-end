@@ -28,8 +28,12 @@ export class FileManagerService {
     return `This action returns a #${id} fileManager`;
   }
 
-  update(id: number, updateFileManagerDto: UpdateFileManagerDto) {
-    return `This action updates a #${id} fileManager`;
+  async update(id: number, status: number) {
+    const model = await this.repo.findOneBy({ id });
+    model.status = status;
+
+    var retVal = this.repo.update(model.id, model);
+    return retVal;
   }
 
   async remove(id: number) {

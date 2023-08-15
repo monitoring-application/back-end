@@ -28,8 +28,8 @@ export class FileManager {
   @Column({ nullable: true })
   page_name: string;
 
-  @Column({ default: false })
-  status: boolean;
+  @Column({ default: 0 })
+  status: number;
 
   @CreateDateColumn({ select: false })
   created_at: Date;
